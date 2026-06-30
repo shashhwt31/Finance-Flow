@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Transaction } from "../types/Transaction";
 import AddTransactionForm from "../components/AddTransactionForm";
 import SummaryCard from "../components/SummaryCard";
+import SearchBar from "../components/SearchBar";
+import TransactionList from "../components/TransactionList";
 
 function Dashboard() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    const savedTransactions = localStorage.getItem("transactions");
+    return savedTransactions ? JSON.parse(savedTransactions) : [];
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddTransaction = (transaction: Transaction) => {
     setTransactions((prev) => [...prev, transaction]);
@@ -16,6 +23,13 @@ function Dashboard() {
     );
   };
 
+  useEffect(() => {
+    localStorage.setItem(
+      "transactions",
+      JSON.stringify(transactions)
+    );
+  }, [transactions]);
+
   const totalIncome = transactions
     .filter((transaction) => transaction.type === "Income")
     .reduce((sum, transaction) => sum + transaction.amount, 0);
@@ -25,6 +39,12 @@ function Dashboard() {
     .reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const balance = totalIncome - totalExpenses;
+
+  const filteredTransactions = transactions.filter((transaction) =>
+    transaction.description
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -62,54 +82,20 @@ function Dashboard() {
           Transactions
         </h2>
 
-        {transactions.length === 0 ? (
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+
+        {filteredTransactions.length === 0 ? (
           <p className="text-gray-500">
-            No transactions yet.
+            No transactions found.
           </p>
         ) : (
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className="flex justify-between items-center bg-gray-50 rounded-xl p-4"
-              >
-                <div>
-  <p className="font-semibold text-lg">
-    {transaction.description}
-  </p>
-
-  <p className="text-gray-500">
-    ₹{transaction.amount.toLocaleString("en-IN")}
-  </p>
-
-  <div className="flex gap-2 mt-1">
-    <span
-      className={`font-semibold ${
-        transaction.type === "Income"
-          ? "text-green-600"
-          : "text-red-600"
-      }`}
-    >
-      {transaction.type}
-    </span>
-
-    <span className="text-gray-500">
-      • {transaction.category}
-    </span>
-  </div>
-</div>
-
-                <button
-                  onClick={() =>
-                    handleDeleteTransaction(transaction.id)
-                  }
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
+          <TransactionList
+            transactions={filteredTransactions}
+            onDelete={handleDeleteTransaction}
+          />
         )}
       </div>
     </div>
