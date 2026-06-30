@@ -9,17 +9,20 @@ function AddTransactionForm({
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState("");
     const [type, setType] = useState<"Income" | "Expense">("Expense");
+    const [category, setCategory] = useState("Food");
     const handleSubmit = () => {
       onAddTransaction({
         id: Date.now(),
         description,
         amount: Number(amount),
         type,
+        category,
       });
 
       setDescription("");
       setAmount("");
       setType("Expense");
+      setCategory("Food");
   };
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mt-8">
@@ -52,6 +55,19 @@ function AddTransactionForm({
           <option>Income</option>
           <option>Expense</option>
         </select>
+        <select
+  className="border rounded-lg p-3"
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+>
+  <option>Food</option>
+  <option>Travel</option>
+  <option>Shopping</option>
+  <option>Salary</option>
+  <option>Entertainment</option>
+  <option>Health</option>
+  <option>Others</option>
+</select>
 
         <button
          onClick={handleSubmit}
