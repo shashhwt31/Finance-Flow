@@ -4,6 +4,7 @@ import AddTransactionForm from "../components/AddTransactionForm";
 import SummaryCard from "../components/SummaryCard";
 import SearchBar from "../components/SearchBar";
 import TransactionList from "../components/TransactionList";
+import FilterBar from "../components/FilterBar";
 
 function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
@@ -12,6 +13,7 @@ function Dashboard() {
   });
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState<"All" | "Income" | "Expense">("All");
 
   const handleAddTransaction = (transaction: Transaction) => {
     setTransactions((prev) => [...prev, transaction]);
@@ -40,11 +42,16 @@ function Dashboard() {
 
   const balance = totalIncome - totalExpenses;
 
-  const filteredTransactions = transactions.filter((transaction) =>
-    transaction.description
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredTransactions = transactions.filter((transaction) => {
+  const matchesSearch = transaction.description
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+
+  const matchesFilter =
+    filter === "All" || transaction.type === filter;
+
+  return matchesSearch && matchesFilter;
+});
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -86,6 +93,10 @@ function Dashboard() {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
         />
+        <FilterBar
+  filter={filter}
+  setFilter={setFilter}
+/>
 
         {filteredTransactions.length === 0 ? (
           <p className="text-gray-500">
@@ -98,6 +109,7 @@ function Dashboard() {
           />
         )}
       </div>
+      
     </div>
   );
 }

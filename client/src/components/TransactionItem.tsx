@@ -37,12 +37,20 @@ function TransactionItem({
         </div>
       </div>
 
-      <button
-        onClick={() => onDelete(transaction.id)}
-        className="text-red-500 hover:text-red-700 font-semibold"
-      >
-        Delete
-      </button>
+      <div className="flex gap-3">
+  <button
+    className="text-blue-600 hover:text-blue-800 font-semibold"
+  >
+    Edit
+  </button>
+
+  <button
+    onClick={() => onDelete(transaction.id)}
+    className="text-red-500 hover:text-red-700 font-semibold"
+  >
+    Delete
+  </button>
+</div>
     </div>
   );
 }
