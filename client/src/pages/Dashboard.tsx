@@ -71,7 +71,7 @@ function Dashboard() {
             {transactions.map((transaction) => (
               <div
                 key={transaction.id}
-                className="flex justify-between items-center border-b pb-2"
+                className="flex justify-between items-center bg-gray-50 rounded-xl p-4"
               >
                 <div>
   <p className="font-semibold text-lg">
